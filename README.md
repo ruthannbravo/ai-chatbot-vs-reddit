@@ -2,6 +2,8 @@
 
 A small empirical study comparing first-turn user messages to a general-purpose AI chatbot (WildChat / ChatGPT, 2023–2024) against opening posts in Reddit advice-adjacent subreddits (2009–2013), on two independent dimensions: **Personal** and **Emotional**.
 
+![Headline figure: %Personal and %Emotional by source, plus P×E cell composition](figures/headline.png)
+
 ![Status](https://img.shields.io/badge/status-complete-brightgreen)
 ![Sample](https://img.shields.io/badge/N-2%2C993-blue)
 ![Classifier](https://img.shields.io/badge/classifier-Claude%20Sonnet%204.6-8A2BE2)
@@ -64,6 +66,10 @@ Classifier: Claude Sonnet 4.6 via the Anthropic Message Batches API, with the co
 ├── classify_batch.py          # batch driver for full-run classification
 ├── analyze.py                 # produces headline table, P×E matrix, chi-square
 ├── spot_check.py              # generates the stratified QA sample
+├── make_figure.py             # produces figures/headline.png from predictions.csv
+│
+├── figures/
+│   └── headline.png           # two-panel headline figure (embedded above)
 │
 ├── pilot_coding.csv           # 40 hand-labeled pilot rows
 ├── predictions.csv            # 2,993 full-run predictions
