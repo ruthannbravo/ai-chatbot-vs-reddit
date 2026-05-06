@@ -124,7 +124,19 @@ This does not contradict reports of intense emotional reliance on AI chatbots �
 
 Treating "emotional/personal" as one construct would have produced a substantially weaker, blurrier finding. By coding the dimensions independently, the analysis surfaces a third pattern that an aggregated label would have hidden: users in personalfinance are doing something genuinely different from users in relationship_advice, even though both sets of posts are squarely "about themselves." Future work on disclosure should probably default to splitting these.
 
-### 6.3 The 2023–2024 snapshot is already dated
+### 6.3 What "personal but not emotional" implies about how people seek advice
+
+The most psychologically interesting result in this study is not the headline gap between Reddit and ChatGPT — it is the internal composition of the Reddit side.
+
+Forty percent of Reddit posts in this sample are personal but measured in tone. Someone describing a debt-to-income ratio, laying out a relationship timeline in structured paragraphs, or working through a career decision with explicit pros and cons is doing something that looks much more like *deliberative reasoning* than emotional release. This challenges a common assumption: that online advice-seeking is primarily emotionally driven — that people post publicly because they need to vent, and the advice is almost incidental.
+
+The data do not support that for a large fraction of Reddit advice posts. Many users appear to be using advice forums as a **thinking tool**: articulating a situation precisely, structuring a decision, and soliciting outside judgment. The emotional charge may be real and present internally, but it does not surface in the text. And the pattern is not confined to r/personalfinance, where a financial framing makes deliberation expected. Even in r/relationship_advice — a venue associated with raw emotional disclosures — roughly 29% of posts are personal but non-emotional (93.6% Personal, 64.5% Emotional; since the 0/1 cell is empty, all Emotional posts are also Personal). In r/socialskills, the personal-but-measured fraction is approximately 43%.
+
+The distinction has practical implications. Deliberative advice-seeking and emotionally-driven disclosure are probably best served by different kinds of responses. A post asking whether to consolidate student loans may benefit from calculations; the same post from someone who opens with "I'm overwhelmed and spiraling" may benefit from acknowledgment before analysis. The present study cannot say whether advice-givers on Reddit recognize this distinction — but it establishes that the distinction exists at scale in the observable text, and that it is the *modal* pattern, not an edge case.
+
+**The AI caveat.** In the 2023–2024 WildChat data, deliberative, personal first turns were almost absent — 10 out of 1,493 messages. But chatbot use has shifted noticeably since then. By 2025–2026, users are visibly bringing "help me think through whether to take this job," "here is my situation, what am I missing?", and "talk me through this decision" prompts to general-purpose chatbots — the same deliberative-cognitive mode that has long been the dominant pattern on Reddit advice forums. Whether this shift shows up in measurable rates, and how large the remaining gap is, is an open empirical question. But if a re-run on 2025–2026 chatbot logs were to show a substantial rise in the personal-but-measured cell on the AI side, it would suggest that general-purpose AI is absorbing a function that Reddit advice forums have served for over a decade: not a confessional, but a structured thinking partner.
+
+### 6.4 The 2023–2024 snapshot is already dated
 
 WildChat's collection window closed in 2024. Between then and the time of writing (mid-2026), how people use general-purpose chatbots has shifted noticeably. Press coverage, model cards, and informal reporting all point in the same direction: more users now bring **advice-seeking, self-reflection, and personal-life questions** to ChatGPT and Claude — relationship dilemmas, career decisions, mental-health check-ins, "help me understand why I reacted this way" prompts. The behavior that was rare in 2023 first turns is plausibly much more common in 2025–2026 first turns.
 
@@ -133,7 +145,7 @@ That means the 0.7% / 0.1% headline should be read as a **2023–2024 baseline**
 ## 7. Caveats
 
 - **Temporal mismatch.** Reddit is 2009–2013; WildChat is 2023–2024. Era could account for some of the gap, but a ~130-fold difference is too large to be entirely era.
-- **The AI side is already a snapshot in time.** Chatbot use shifted between 2024 and 2026 — anecdotal and journalistic evidence suggests more users now bring relationship questions, career reflections, and self-understanding prompts to general-purpose chatbots. A 2025–2026 WildChat-equivalent sample would almost certainly show a higher Personal rate on the AI side. See §6.3.
+- **The AI side is already a snapshot in time.** Chatbot use shifted between 2024 and 2026 — anecdotal and journalistic evidence suggests more users now bring relationship questions, career reflections, and self-understanding prompts to general-purpose chatbots. A 2025–2026 WildChat-equivalent sample would almost certainly show a higher Personal rate on the AI side. See §6.4.
 - **Subreddit selection.** Four advice-adjacent subreddits are not all of Reddit. The within-Reddit variation (LifeProTips at 13% Personal vs relationship_advice at 94%) shows how sensitive the answer is to which corners of Reddit you pick.
 - **WildChat is general-purpose.** Users came to ChatGPT for many reasons. This is not a sample of "people seeking emotional support from AI."
 - **Self-selected populations.** Findings describe these subgroups, not "people in general."

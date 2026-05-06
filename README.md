@@ -39,6 +39,63 @@ Chi-square (Reddit advice vs WildChat): χ²(1) = 2,173 on Personal, χ²(1) = 7
 
 Full discussion: [`research_article.md`](research_article.md).
 
+## Personal vs. Emotional: An In-Depth Look
+
+### Why two dimensions instead of one
+
+Most disclosure research collapses "personal" and "emotional" into a single label. This study codes them as two independent binary dimensions, and that decision is what makes the main finding visible. A message can be:
+
+| | Not Emotional | Emotional |
+|---|---|---|
+| **Not Personal** | Off-topic task (code help, trivia) | — (empty; see below) |
+| **Personal** | Deliberative self-disclosure | Affective self-disclosure |
+
+The two dimensions are not interchangeable. A post about whether to refinance a mortgage is personal (the author's own financial life) but not emotional (the language is analytical). A post that opens "I'm terrified I'm making the wrong call" is both. Treating them as one construct hides the first type entirely.
+
+### The four-cell breakdown
+
+| | Neither (0/0) | Personal only (1/0) | Emotional only (0/1) | Both (1/1) |
+|---|---:|---:|---:|---:|
+| Reddit (N = 1,500) | 429 | **594** | 0 | 476 |
+| WildChat (N = 1,493) | 1,482 | 10 | 0 | 1 |
+
+Two things stand out immediately:
+
+1. **The (0/1) cell — emotional but not personal — is empty across both sources.** After one manual correction (a classifier over-read behavioral phrasing as named affect), zero messages express emotion without also being about the author. Empirically, naming your own feelings makes the message about yourself.
+
+2. **The dominant Reddit pattern is (1/0): personal but not emotional.** 594 posts — roughly 40% of all Reddit posts in the sample — describe the author's own life in measured, non-affective language. This is the single most common cell on the Reddit side, and it is nearly invisible if you use a single "emotional/personal" label.
+
+### Variation across subreddits
+
+The split comes into focus when you look at each subreddit individually:
+
+| Subreddit | % Personal | % Emotional | % Personal-not-Emotional |
+|---|---:|---:|---:|
+| relationship_advice | 93.6% | 64.5% | ~29% |
+| socialskills | 90.7% | 47.2% | ~43% |
+| personalfinance | 88.0% | 12.3% | ~76% |
+| LifeProTips | 13.1% | 3.2% | ~10% |
+
+All three genuine advice subreddits have nearly identical Personal rates (~90%). What separates them is how much emotion surfaces in the language. r/personalfinance is the extreme case — nearly nine in ten posts are about the author's own financial life, but fewer than one in eight uses language that names an internal state. r/relationship_advice is at the opposite end: most posts are both personal *and* emotional. r/socialskills sits in the middle.
+
+This variation is not explained by topic sensitivity. Finance, relationships, and social anxiety are all high-stakes domains. The difference is in how people frame their situation — analytically or affectively — and the data show both modes are common.
+
+### The psychological implication
+
+The "personal but not emotional" pattern challenges the assumption that online advice-seeking is primarily emotionally driven — that people post publicly because they need to vent and the advice is secondary. For a large fraction of Reddit posts, that picture is wrong.
+
+Many users appear to be using advice forums as a **deliberative thinking tool**: articulating a situation precisely, structuring a decision, and soliciting outside judgment. The emotional stakes may be real, but they do not surface in the language. This is not a niche pattern — it is the modal one.
+
+The distinction matters practically. A post laying out mortgage amortization scenarios calls for a different kind of response than a post that opens with "I don't know how much more of this I can take." Both are personal. Only one is emotional. Collapsing them produces a blurrier picture of what advice-seekers actually need.
+
+### What the AI side shows — and the caveat
+
+Across 1,493 random 2023–2024 ChatGPT first turns, only 10 were personal-but-not-emotional and 1 was both-personal-and-emotional. The deliberative advice-seeking mode that is dominant on Reddit was almost entirely absent from the AI side in that window. Users came to ChatGPT for tasks — code, math, summarization, creative writing — not to think through their own situations out loud.
+
+**The caveat:** that baseline is already dated. Between 2024 and 2026, how people use general-purpose chatbots has shifted. More users now visibly bring "help me think through this decision," "here is my situation — what am I missing?", and career or relationship dilemmas to ChatGPT and Claude. Whether the personal-but-measured cell on the AI side has grown substantially, and whether the gap to Reddit has narrowed, is the most direct empirical follow-up this study opens. The methodology is designed to re-run on a fresh AI-side sample with no codebook changes.
+
+Full discussion in [`research_article.md`](research_article.md) §6.3.
+
 ## Method
 
 Two independent binary codes per message:
