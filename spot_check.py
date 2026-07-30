@@ -1,17 +1,31 @@
 """
-Generate a stratified random sample of ~50 predictions for manual QA.
+Generate a stratified random sample of predictions for manual QA — 52 rows
+under the plan below.
 
 Reads predictions.csv + the original sample CSVs (for full text), writes
 spot_check_sample.csv with one row per sampled message. The sample
 oversamples the rare cells (where errors are most consequential) and takes
 random draws from the dominant cells.
 
+Two caveats worth knowing before relying on this sampler:
+
+  * The 22/24 spot check reported in results.md used 3 draws per common cell,
+    not the 10 below, and its per-row labels were never committed. This plan
+    generates the committed 52-row spot_check_sample.csv, whose human_p /
+    human_e columns are still blank. Filling them in and committing the result
+    is what would make that validation claim checkable.
+  * Reviewing positive predictions measures precision, not recall. A message
+    wrongly coded 0/0 can never enter this sample, so it cannot detect false
+    negatives — the error direction the WildChat headline rate is most
+    sensitive to. Sampling some predicted-0/0 rows (as the plan does) only
+    partly offsets this.
+
 Workflow:
   1. python3 spot_check.py            # generates spot_check_sample.csv
   2. Open in Numbers/Excel/Google Sheets
   3. Read each `text` and fill in `human_p` and `human_e` (0 or 1)
   4. Add notes for any disagreements
-  5. Share back — we can then compute per-cell agreement
+  5. Commit the filled-in CSV so the agreement figure is reproducible
 """
 
 import csv
@@ -42,6 +56,12 @@ SAMPLE_PLAN = {
 def load_text_by_id() -> dict[str, str]:
     text_by_id = {}
     for path in (REDDIT_CSV, WILDCHAT_CSV):
+        if not Path(path).exists():
+            raise SystemExit(
+                f"{path} not found — needed to attach message text to each sampled row.\n"
+                f"The raw samples are not committed to this repo; recreate them from "
+                f"Hugging Face using the parameters in data_notes.md."
+            )
         with open(path) as f:
             for row in csv.DictReader(f):
                 text_by_id[row["id"]] = row["text"]

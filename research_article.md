@@ -5,7 +5,7 @@
 
 ## Abstract
 
-The popular narrative around general-purpose AI chatbots is that users are increasingly bringing emotional and personal problems to them — sometimes treating them as confidants. We tested this against observable text by comparing 1,500 random first-turn user messages from WildChat (a public log of ChatGPT conversations, 2023–2024) with 1,500 opening posts from four Reddit advice-adjacent subreddits (2009–2013). Each message was scored on two independent binary dimensions, **Personal** (the author is the subject and the topic is in a life domain) and **Emotional** (the author's language names an internal state), using a four-rule codebook validated at 100% agreement on a 40-post gold-labeled pilot. Reddit advice posts (excluding a tips-sharing subreddit, LifeProTips) were 90.8% Personal and 41.3% Emotional. WildChat first turns were 0.7% Personal and 0.1% Emotional — a roughly 130-fold gap on Personal. The hypothesis is reversed in this data: people brought vastly *less* observable personal/emotional content to a general-purpose chatbot than to public Reddit advice forums.
+The popular narrative around general-purpose AI chatbots is that users are increasingly bringing emotional and personal problems to them — sometimes treating them as confidants. We tested a bounded version of this against observable text by comparing 1,500 random first-turn user messages from WildChat (a public log of ChatGPT conversations, 2023–2024) with 1,500 opening posts from four Reddit advice-adjacent subreddits (2009–2013). Each message was scored on two independent binary dimensions, **Personal** (the author is the subject and the topic is in a life domain) and **Emotional** (the author's language names an internal state), using a four-rule codebook that reached 40/40 agreement on a 40-post hand-labeled pilot — in-sample, after one rule was tightened to resolve a disagreement within that set. Reddit advice posts (excluding a tips-sharing subreddit, LifeProTips) were 90.8% Personal and 41.3% Emotional. WildChat first turns were 0.7% Personal and 0.1% Emotional — a roughly 123-fold gap on Personal, resting on only 11 Personal WildChat messages. In these venues the expected direction is reversed: people brought vastly *less* observable personal/emotional content to a general-purpose chatbot than to public Reddit advice forums. The comparison is deliberately asymmetric — advice-seeking venues against unconditioned chatbot traffic — so it bounds rather than estimates any population-level gap, and it speaks to what users typed, not to what they felt.
 
 ## 1. Question
 
@@ -49,9 +49,11 @@ Claude Sonnet 4.6 (`claude-sonnet-4-6`) was used as the classifier. The system p
 
 ### 3.3 Validation
 
-**Pilot (N = 40):** 40 hand-labeled posts (20 Reddit, 20 WildChat). After one Rule 2 tightening on behavioral descriptions, the classifier reached **40/40 agreement** on both Personal and Emotional.
+**Pilot (N = 40):** 40 hand-labeled posts (20 Reddit, 20 WildChat). After one Rule 2 tightening on behavioral descriptions, the classifier reached **40/40 agreement** on both Personal and Emotional. This is an in-sample figure: the tightening was prompted by a disagreement on `rd_a20ea`, one of the 40, and agreement was then measured on the same unchanged set. The 20 WildChat items are all gold-labeled 0/0 and most are unambiguous task text, so the set is easier than 40/40 implies. Reproducible via `classify.py` against the committed `pilot_coding.csv`.
 
-**Spot check (N = 24, full-run predictions):** A stratified sample weighted toward rare cells (1 Reddit-0/1, 10 WildChat-1/0, 1 WildChat-1/1, plus 3 random draws per common cell) was reviewed manually. Result: **22/24 (91.7%)** agreement. Both disagreements were on Emotional and in opposite directions — one over-coded, one under-coded — implying no systematic bias.
+**Spot check (N = 24, full-run predictions):** A stratified sample weighted toward rare cells (1 Reddit-0/1, 10 WildChat-1/0, 1 WildChat-1/1, plus 3 random draws per common cell) was reviewed manually. Result: **22/24 (91.7%)** agreement, with both disagreements on Emotional and in opposite directions. Three limits on how much weight this carries: the per-row labels were never committed to the repo (the committed `spot_check_sample.csv` is a 52-row sample with the human columns blank), so only the two corrections are traceable; rare-cell stratification means this is not an estimate of overall accuracy; and because it reviews positive *predictions*, it measures precision, not recall — a WildChat message wrongly coded 0/0 could never appear in it, which is precisely the error direction the 0.7% headline is sensitive to.
+
+**A structural limitation of both.** One person wrote the codebook and produced every human label in this study. There is no second coder and therefore no inter-rater reliability statistic (Cohen's κ or otherwise). Agreement here means *model vs. that one coder*, never *coder vs. coder*, so it measures whether the model applied the codebook consistently — not whether the codebook is intersubjectively reliable.
 
 ## 4. Results
 
@@ -63,7 +65,7 @@ Claude Sonnet 4.6 (`claude-sonnet-4-6`) was used as the classifier. The system p
 | Reddit advice (3 subs, excl. LifeProTips) | 1,125 | **90.8%** | **41.3%** |
 | WildChat | 1,493 | **0.7%** | **0.1%** |
 
-The gap on Personal is roughly **130-fold** between Reddit advice forums and ChatGPT first turns.
+The gap on Personal is roughly **123-fold** between Reddit advice forums and ChatGPT first turns (90.76% / 0.737%). Because the WildChat numerator is 11 messages, the interval around that ratio is wide (roughly 68×–222×); "two orders of magnitude" is the claim the data support robustly.
 
 ### 4.2 By subreddit
 
@@ -82,10 +84,11 @@ The gap on Personal is roughly **130-fold** between Reddit advice forums and Cha
 
 | | 0/0 (neither) | 1/0 (personal, not emotional) | 0/1 (emotional, not personal) | 1/1 (both) |
 |---|---:|---:|---:|---:|
-| Reddit | 429 | **594** | 1 | 476 |
+| Reddit (classifier output) | 429 | **594** | 1 | 476 |
+| Reddit (human-corrected) | 430 | **593** | 0 | 477 |
 | WildChat | 1,482 | 10 | 0 | 1 |
 
-The single Reddit 0/1 case was reviewed manually and reclassified to 0/0 (the model over-applied behavioral phrasing as named affect). After correction, **the (0/1) cell is empty across both sources**.
+The spot check produced two manual flips, both Reddit rows and both on Emotional: `rd_a3wjd` from 0/1 to 0/0 (the model read behavioral phrasing as named affect), and `rd_a1im9` from 1/0 to 1/1 (the model treated "I was actually revolted" as neutral under Rule 3). They move in opposite directions, so aggregate %P and %E are unchanged; only the cell counts shift. After correction, **the (0/1) cell is empty across both sources** — though see §5.2 on how much that is worth. The first row is what `analyze.py` prints from `predictions.csv`, which stores the classifier's original labels; the corrections are applied in `make_figure.py` and documented in `results.md`.
 
 ### 4.4 Statistical significance
 
@@ -102,11 +105,13 @@ With effects this large, statistical significance is largely a formality — the
 
 ### 5.1 "Personal but not emotional" is the dominant Reddit pattern
 
-594 of 1,500 Reddit posts — roughly **40%** — are personal but measured in tone. A single combined "emotional/personal" label would have collapsed this. Splitting Personal and Emotional into two independent binary dimensions was the methodological decision that made the pattern visible. It is most pronounced in personalfinance, where the topic is by definition personal but the language stays deliberative.
+593 of 1,500 Reddit posts — roughly **40%** — are personal but measured in tone. A single combined "emotional/personal" label would have collapsed this. Splitting Personal and Emotional into two independent binary dimensions was the methodological decision that made the pattern visible. It is most pronounced in personalfinance, where the topic is by definition personal but the language stays deliberative.
 
 ### 5.2 The (0/1) cell is empty across both sources
 
-Zero cases of "emotional but not personal" after manual correction. Empirically, **expressing your own feelings makes the message about yourself**. This is both an internal consistency check on the codebook and a small finding in its own right.
+Zero cases of "emotional but not personal" after manual correction. Empirically, **expressing your own feelings makes the message about yourself**.
+
+This should be read as a coherence check on the codebook rather than as a discovery about language. Rule 2 requires a named internal state belonging to the author, which is hard to satisfy while the author is not the subject — so an empty (0/1) cell is close to true by construction. The single observed counterexample is also the one removed by manual correction, which means the cell is empty partly by decision. It shows the two dimensions are not orthogonal in practice; it is not evidence that emotion-without-self-reference does not occur in human writing.
 
 ### 5.3 ChatGPT first turns are strikingly impersonal at scale
 
@@ -116,7 +121,9 @@ Across 1,493 random first turns, only 11 were Personal (0.7%) and 1 was Emotiona
 
 ### 6.1 What the gap means
 
-In *this* data, the popular narrative is reversed. Public Reddit advice forums are a venue where people deliberately disclose personal situations and frequently, though not always, name how they feel about them. A general-purpose chatbot is not. Most ChatGPT first turns look more like the kinds of things you would type into a search engine or paste into a productivity tool than the kinds of things you would post on r/relationship_advice.
+In *this* data, and between *these* venues, the expected direction is reversed. Public Reddit advice forums are a venue where people deliberately disclose personal situations and frequently, though not always, name how they feel about them. A general-purpose chatbot is not. Most ChatGPT first turns look more like the kinds of things you would type into a search engine or paste into a productivity tool than the kinds of things you would post on r/relationship_advice.
+
+One asymmetry deserves to be stated rather than buried in the caveats, because it bounds how far the result generalizes. The Reddit arm was drawn from subreddits selected *because* people bring personal problems there; the WildChat arm is an unconditioned random draw from all ChatGPT traffic. The comparison is therefore between a venue optimized for disclosure and a venue used for everything, which is the right design for the question as posed in §1 but the wrong design for testing a claim about chatbot users in general. Two things keep this from hollowing out the finding: the gap holds across the entire observed range of the Reddit side, with even LifeProTips at 13.1% Personal running ~18× above WildChat (χ² = 143, p = 7 × 10⁻³³), and the unfiltered all-four-subreddit row is still ~97×. But LifeProTips is itself advice-adjacent, so it is not a stand-in for an unconditioned Reddit base rate. A random draw across all of Reddit was never taken, and until one is, the honest statement is that this study measures a venue difference of at least two orders of magnitude, not a population difference of any specific size.
 
 This does not contradict reports of intense emotional reliance on AI chatbots — it constrains where to look for it. **A general-purpose model used by a general population is not the same dataset as a companionship-marketed product (Replika, Character.AI) used by a self-selected one.** The gap also does not say anything about what users *felt* before they typed; it says only what they typed in the first turn.
 
@@ -144,7 +151,11 @@ That means the 0.7% / 0.1% headline should be read as a **2023–2024 baseline**
 
 ## 7. Caveats
 
-- **Temporal mismatch.** Reddit is 2009–2013; WildChat is 2023–2024. Era could account for some of the gap, but a ~130-fold difference is too large to be entirely era.
+- **Temporal mismatch.** Reddit is 2009–2013; WildChat is 2023–2024. Era could account for some of the gap, but a ~123-fold difference is too large to be entirely era.
+- **Asymmetric conditioning.** Advice-seeking subreddits versus unconditioned chatbot traffic. See §6.1 — the result bounds a venue gap rather than estimating a population one.
+- **The headline ratio rests on 11 events.** Only 11 of 1,493 WildChat messages were Personal, giving the ~123× estimate a 95% interval of roughly 68×–222×. The order of magnitude is solid; the multiplier is not precise.
+- **Validation is single-rater and partly in-sample.** See §3.3. One coder, no Cohen's κ, a 40/40 figure measured after tuning a rule on the same 40 items, and a spot check whose per-row labels are not committed. An independent coder on a held-out set is the first thing further work should add.
+- **No literature citations.** This article frames itself against a "popular narrative" and against disclosure research that collapses personal and emotional into one construct, but cites no specific sources for either. Those claims should be read as the author's characterization of the field, not as documented positions.
 - **The AI side is already a snapshot in time.** Chatbot use shifted between 2024 and 2026 — anecdotal and journalistic evidence suggests more users now bring relationship questions, career reflections, and self-understanding prompts to general-purpose chatbots. A 2025–2026 WildChat-equivalent sample would almost certainly show a higher Personal rate on the AI side. See §6.4.
 - **Subreddit selection.** Four advice-adjacent subreddits are not all of Reddit. The within-Reddit variation (LifeProTips at 13% Personal vs relationship_advice at 94%) shows how sensitive the answer is to which corners of Reddit you pick.
 - **WildChat is general-purpose.** Users came to ChatGPT for many reasons. This is not a sample of "people seeking emotional support from AI."
@@ -162,9 +173,13 @@ All code, data references, and intermediate artifacts live alongside this articl
 - `classify.py` / `classify_batch.py` — classification scripts
 - `predictions.csv` — full-run model outputs
 - `analyze.py` — produces the headline table, P × E matrix, and χ² in §4
-- `spot_check.py` / `spot_check_sample.csv` — QA sampler
+- `make_figure.py` — produces the headline figure
+- `spot_check.py` / `spot_check_sample.csv` — QA sampler (human columns blank; see §3.3)
+- `requirements.txt` — pinned dependencies and tested Python version
 
-Random seeds (42 for sampling, 7 for the pilot draw) are fixed. Upstream dataset revision hashes were not recorded; if exact reproducibility becomes important, those should be pinned.
+§4 is verifiable from this repo alone: `analyze.py` reads the committed `predictions.csv` and needs no API key or raw data. §3.3's pilot figure is likewise reproducible from the committed `pilot_coding.csv`.
+
+Two gaps remain, both known and unclosed. The script that drew the upstream samples was never committed — only its outputs — so although the seeds are recorded (42 for sampling, 7 for the pilot draw), the sampling step cannot be re-executed as written. And upstream dataset revision hashes were not pinned, so a fresh Hugging Face pull is not guaranteed to reproduce the same rows. Regenerating `predictions.csv` from scratch is therefore approximate; verifying the published analysis is exact.
 
 ## 9. Conclusion
 

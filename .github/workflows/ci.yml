@@ -1,0 +1,35 @@
+name: CI
+
+# Verifies that the analysis in results.md still reproduces from the committed
+# predictions.csv. Needs no API key and no raw samples.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Compile all scripts
+        run: python -m py_compile analyze.py classify.py classify_batch.py make_figure.py spot_check.py
+
+      - name: Reproduce the headline analysis
+        run: python analyze.py
+
+      - name: Check the published headline numbers still hold
+        run: python tests/test_headline.py
+
+      - name: Regenerate the headline figure
+        run: python make_figure.py

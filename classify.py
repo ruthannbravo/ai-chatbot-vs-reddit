@@ -128,6 +128,7 @@ def main():
         rows = list(csv.DictReader(f))
 
     results = []
+    failures = []
     p_correct = e_correct = both_correct = 0
     cache_reads = cache_writes = input_tokens = output_tokens = 0
 
@@ -138,7 +139,11 @@ def main():
         try:
             pred, usage = classify(client, row["text"])
         except Exception as exc:
-            print(f"[{i}/{len(rows)}] {row['id']}: ERROR {exc}")
+            # Skipped rows leave the agreement denominator, so they are collected
+            # and reported explicitly below — otherwise "40/40" could quietly be
+            # 38/38 on a run where two calls failed.
+            print(f"[{i}/{len(rows)}] {row['id']}: ERROR {type(exc).__name__}: {exc}")
+            failures.append((row["id"], f"{type(exc).__name__}: {exc}"))
             continue
 
         pred_p, pred_e = pred["personal"], pred["emotional"]
@@ -180,10 +185,20 @@ def main():
     if n == 0:
         sys.exit("No rows classified.")
 
-    print(f"\n=== Agreement (n={n}) ===")
+    if failures:
+        print(f"\n!!! {len(failures)} of {len(rows)} rows failed to classify and are")
+        print(f"!!! EXCLUDED from the agreement figures below. Any percentage quoted")
+        print(f"!!! from this run is over {n} rows, not {len(rows)}. Re-run before citing it.")
+        for rid, why in failures:
+            print(f"      {rid}: {why}")
+
+    print(f"\n=== Agreement (n={n} of {len(rows)} gold rows) ===")
     print(f"Personal:  {p_correct}/{n} = {p_correct/n*100:.1f}%")
     print(f"Emotional: {e_correct}/{n} = {e_correct/n*100:.1f}%")
     print(f"Both:      {both_correct}/{n} = {both_correct/n*100:.1f}%  (target ≥85%)")
+    print("\nNote: this is in-sample. Rule 2 was tightened to resolve a disagreement on")
+    print("rd_a20ea, one of these 40 rows (see coding_scheme.md change log), so perfect")
+    print("agreement here is weaker evidence than it looks. See results.md caveats.")
 
     # Cache + cost
     print(f"\n=== Tokens ===")

@@ -7,8 +7,7 @@ A small empirical study comparing first-turn user messages to a general-purpose 
 ![Status](https://img.shields.io/badge/status-complete-brightgreen)
 ![Sample](https://img.shields.io/badge/N-2%2C993-blue)
 ![Classifier](https://img.shields.io/badge/classifier-Claude%20Sonnet%204.6-8A2BE2)
-![Pilot agreement](https://img.shields.io/badge/pilot%20agreement-40%2F40-success)
-![Spot check](https://img.shields.io/badge/spot%20check-22%2F24-success)
+![Pilot agreement](https://img.shields.io/badge/pilot%20agreement-40%2F40%20in--sample-yellowgreen)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 ---
@@ -17,7 +16,9 @@ A small empirical study comparing first-turn user messages to a general-purpose 
 
 > **Reddit advice forums:** ~91% of opening posts are personal, ~41% are emotional.
 > **ChatGPT first turns:** 0.7% are personal, 0.1% are emotional.
-> The gap on Personal is roughly **130-fold** — the popular narrative is reversed in this data.
+> The gap on Personal is roughly **123-fold** — the direction people expect is reversed in this data.
+
+Note what is and isn't being compared: Reddit posts drawn from subreddits chosen *because* people bring personal problems there, against a random cross-section of *all* ChatGPT traffic. That asymmetry is deliberate (the question is about venues, not populations), but it means 123-fold is an upper bound on any like-for-like gap. A random all-Reddit sample was never drawn, so unconditioned Reddit vs. unconditioned chatbot remains untested.
 
 The dominant Reddit pattern, hidden by single-label "emotional/personal" coding, is **personal but measured**: ~40% of Reddit posts describe the author's own life in deliberative, non-affective language. Splitting the two dimensions made it visible.
 
@@ -33,7 +34,7 @@ Chi-square (Reddit advice vs WildChat): χ²(1) = 2,173 on Personal, χ²(1) = 7
 
 ## Findings
 
-1. **"Personal but not emotional" is the dominant Reddit pattern** — 594 of 1,500 posts (~40%). Most pronounced in r/personalfinance: ~90% Personal but only ~12% Emotional.
+1. **"Personal but not emotional" is the dominant Reddit pattern** — 593 of 1,500 posts (~40%). Most pronounced in r/personalfinance: ~90% Personal but only ~12% Emotional.
 2. **The (0/1) "emotional but not personal" cell is empty** across both sources after manual correction. Expressing your own feelings makes the message about yourself.
 3. **ChatGPT first turns are strikingly impersonal at scale.** 11 personal and 1 emotional out of 1,493. Users came for code help, summarization, math, role-play, factual questions — not personal disclosure.
 
@@ -56,14 +57,16 @@ The two dimensions are not interchangeable. A post about whether to refinance a 
 
 | | Neither (0/0) | Personal only (1/0) | Emotional only (0/1) | Both (1/1) |
 |---|---:|---:|---:|---:|
-| Reddit (N = 1,500) | 429 | **594** | 0 | 476 |
+| Reddit (N = 1,500) | 430 | **593** | 0 | 477 |
 | WildChat (N = 1,493) | 1,482 | 10 | 0 | 1 |
+
+Reddit counts are the human-corrected ones (two manual flips from the spot check moved one post out of 0/1 and one from 1/0 to 1/1). The raw classifier output was 429 / 594 / 1 / 476 — that is what `analyze.py` prints, and `results.md` shows both rows side by side. Aggregate %P and %E are identical either way, because the two flips cancel.
 
 Two things stand out immediately:
 
-1. **The (0/1) cell — emotional but not personal — is empty across both sources.** After one manual correction (a classifier over-read behavioral phrasing as named affect), zero messages express emotion without also being about the author. Empirically, naming your own feelings makes the message about yourself.
+1. **The (0/1) cell — emotional but not personal — is empty across both sources.** After manual correction (the classifier over-read behavioral phrasing as named affect in one post), zero messages express emotion without also being about the author. Empirically, naming your own feelings makes the message about yourself. Note this is partly true by construction: the codebook's Rule 2 requires a *named internal state*, which is hard to satisfy without also being the subject.
 
-2. **The dominant Reddit pattern is (1/0): personal but not emotional.** 594 posts — roughly 40% of all Reddit posts in the sample — describe the author's own life in measured, non-affective language. This is the single most common cell on the Reddit side, and it is nearly invisible if you use a single "emotional/personal" label.
+2. **The dominant Reddit pattern is (1/0): personal but not emotional.** 593 posts — roughly 40% of all Reddit posts in the sample — describe the author's own life in measured, non-affective language. This is the single most common cell on the Reddit side, and it is nearly invisible if you use a single "emotional/personal" label.
 
 ### Variation across subreddits
 
@@ -105,7 +108,13 @@ Two independent binary codes per message:
 
 Four disambiguating rules (framing > topic; self-involvement isn't enough; strict threshold for affect; content ≠ affect). Codebook in [`coding_scheme.md`](coding_scheme.md).
 
-Classifier: Claude Sonnet 4.6 via the Anthropic Message Batches API, with the codebook as a cached system prompt and a JSON-schema-constrained output. **Pilot agreement: 40/40 on a hand-labeled gold set. Spot-check agreement: 22/24 on a stratified sample of full-run predictions.**
+Classifier: Claude Sonnet 4.6 via the Anthropic Message Batches API, with the codebook as a cached system prompt and a JSON-schema-constrained output.
+
+**On validation, stated precisely** — this matters more than a badge:
+
+- **Pilot: 40/40 agreement on 40 hand-labeled posts**, reproducible by running `classify.py` against the committed `pilot_coding.csv`. Read it as *in-sample*: Rule 2 was tightened specifically to resolve a disagreement on one of those 40 posts (`rd_a20ea`, see the `coding_scheme.md` change log), and agreement was then measured on the same 40. Half the set is WildChat task text that is unambiguously 0/0, so it is an easier test than the number suggests.
+- **Spot check: a 24-row stratified review of full-run predictions found 22/24 agreement**, and produced the two manual corrections applied above. **The per-row labels for that review were never captured in this repo** — `spot_check_sample.csv` is the 52-row sample the committed sampler generates, with the `human_p` / `human_e` columns blank. So the 22/24 figure is documented in `results.md` but not independently checkable from committed files. It is reported here as a note, not as evidence.
+- **All labeling was done by one person (the author). There is no second coder and no inter-rater reliability statistic anywhere in this project.**
 
 ## Repo layout
 
@@ -131,9 +140,14 @@ Classifier: Claude Sonnet 4.6 via the Anthropic Message Batches API, with the co
 ├── pilot_coding.csv           # 40 hand-labeled pilot rows
 ├── predictions.csv            # 2,993 full-run predictions
 ├── validation_results.csv     # 40-row pilot validation output
-├── spot_check_sample.csv      # stratified QA sample (52 rows)
-└── batch_state.json           # batch ID + row metadata for resumable polling
+└── spot_check_sample.csv      # stratified QA sample (52 rows, human columns blank)
+│
+├── requirements.txt           # pinned dependencies + tested Python version
+├── CITATION.cff               # citation metadata
+└── .github/workflows/ci.yml   # compiles the scripts and re-runs analyze.py
 ```
+
+`batch_state.json` (the batch ID and row metadata used for resumable polling) is written at submit time and is **not** committed — it is machine-specific and expires. See `.gitignore`.
 
 ## Reproducing
 
@@ -146,33 +160,51 @@ Output schemas are in [`data_notes.md`](data_notes.md) §Data dictionary.
 
 The pipeline:
 
+**The fastest path:** every number in this README comes from the committed `predictions.csv`, so you can verify the whole analysis with no API key and no raw data:
+
 ```bash
-# 1. Install dependencies
-pip install anthropic scipy datasets
+pip install -r requirements.txt
+python3 analyze.py      # reproduces the headline table, P×E matrix, and all four χ²
+python3 make_figure.py  # regenerates figures/headline.png
+```
+
+The full pipeline, from scratch:
+
+```bash
+# 1. Install dependencies (pinned versions; Python 3.10+)
+pip install -r requirements.txt
 
 # 2. Set API key
 export ANTHROPIC_API_KEY=sk-ant-...
 
 # 3. Recreate reddit_sample.csv and wildchat_sample.csv
-#    (write a small loader against the parameters above; see data_notes.md)
+#    NOTE: no loader script is committed for this step — you must write one
+#    against the parameters in data_notes.md. Upstream dataset revision hashes
+#    were not pinned, so an exact byte-identical rebuild is not guaranteed.
 
 # 4. Validate the classifier against the 40-row pilot (~$0.05)
 python3 classify.py
 # → writes validation_results.csv; expect 40/40 agreement
+#   (runs off the committed pilot_coding.csv — step 3 is not required for this)
 
 # 5. Run the full batch (~$1–3, completes in under an hour)
 python3 classify_batch.py
-# → writes predictions.csv; resumable via batch_state.json
+# → writes predictions.csv and, on failure, errors.csv
+# → writes batch_state.json; to resume that batch after an interruption:
+python3 classify_batch.py --resume
 
 # 6. Produce the headline table and chi-square
 python3 analyze.py
 
-# 7. (Optional) generate a stratified QA sample
+# 7. Regenerate the headline figure
+python3 make_figure.py
+
+# 8. (Optional) generate a stratified QA sample — needs step 3, for message text
 python3 spot_check.py
 # → writes spot_check_sample.csv for manual review
 ```
 
-Random seeds are fixed (42 for sampling, 7 for the pilot draw).
+Seeds: the QA sampler in `spot_check.py` uses `random.seed(42)` and reproduces the committed sample exactly. The seeds quoted for the upstream data draw (42) and the pilot draw (7) describe scripts that were **not** committed — only their outputs (`pilot_coding.csv`, and the gitignored sample CSVs) are.
 
 ## Data
 
@@ -188,7 +220,10 @@ Three duplicate WildChat IDs and four classifier refusals are dropped at analysi
 
 ## Caveats
 
-- **Temporal mismatch.** Reddit is 2009–2013; WildChat is 2023–2024. Era could explain some of the gap, but not a ~130-fold one.
+- **Temporal mismatch.** Reddit is 2009–2013; WildChat is 2023–2024. Era could explain some of the gap, but not a ~123-fold one.
+- **The two sides are not conditioned the same way.** The Reddit arm is drawn from subreddits selected for personal disclosure; the WildChat arm is unconditioned general traffic. The gap is real at every level of the range (even LifeProTips, the least personal sub at 13.1%, is ~18× WildChat), but the headline multiplier is an upper bound, not a like-for-like estimate. A symmetric design would classify WildChat turns for advice-seeking intent first, or draw a random all-Reddit sample. Neither was done.
+- **The Personal ratio rests on 11 events.** Only 11 of 1,493 WildChat messages were coded Personal. The point estimate (~123×) has a wide confidence interval (roughly 68× to 222×); "two orders of magnitude" is the defensible claim, not any precise multiple.
+- **Validation is single-rater and partly in-sample.** One person wrote the codebook and produced every human label. No second coder, no Cohen's κ. The 40/40 pilot figure was measured after tightening a rule to resolve a disagreement within that same 40-post set, and the 22/24 spot-check labels are not committed. See Method above.
 - **The AI side is itself dated.** WildChat closed in 2024. Between then and 2026, chatbot use has shifted — more users now bring relationship questions, career decisions, mental-health check-ins, and "help me understand myself" prompts to general-purpose AI. The 0.7% / 0.1% headline should be read as a **2023–2024 baseline**, not a current estimate. A re-run on 2025–2026 logs would very likely show a higher Personal rate on the AI side and a narrower gap. The methodology here is designed to drop straight onto a fresh sample with no codebook changes.
 - **Subreddit choice.** Four advice-adjacent subs, not all of Reddit. r/AskReddit and r/Advice were not in the upstream dataset.
 - **General-purpose chatbot only.** This is not a sample of "people seeking emotional support from AI" — companionship-marketed products (Replika, Character.AI) would likely look very different.

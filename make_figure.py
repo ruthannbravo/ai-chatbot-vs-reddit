@@ -108,11 +108,15 @@ def main():
     ax_a.set_axisbelow(True)
     ax_a.yaxis.grid(True, linestyle=":", alpha=0.5)
 
-    # Annotate the gap
+    # Annotate the gap. Computed from the unrounded rates rather than written in
+    # by hand — dividing the rounded display values (91 / 0.7) inflates this to
+    # "130-fold", which is the wrong number and cannot drift back in if it is
+    # derived here.
+    fold_gap = p_vals[1] / p_vals[2]  # Reddit advice %P over WildChat %P
     ax_a.annotate("", xy=(2 - width / 2, 5), xytext=(1 - width / 2, 88),
                   arrowprops=dict(arrowstyle="-|>", color="#777", lw=1.2,
                                   connectionstyle="arc3,rad=-0.25"))
-    ax_a.text(1.5, 55, "~130-fold gap\non Personal", fontsize=9, color="#444",
+    ax_a.text(1.5, 55, f"~{fold_gap:.0f}-fold gap\non Personal", fontsize=9, color="#444",
               ha="center", style="italic")
 
     # === Panel B: stacked bar of P×E composition ===

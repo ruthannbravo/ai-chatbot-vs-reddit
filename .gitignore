@@ -11,6 +11,11 @@ secrets.json
 reddit_sample.csv
 wildchat_sample.csv
 
+# Run state — machine-specific, and the referenced batch expires after 29 days,
+# so committing it makes a fresh clone try to resume a dead batch.
+batch_state.json
+errors.csv
+
 # Python
 __pycache__/
 *.py[cod]

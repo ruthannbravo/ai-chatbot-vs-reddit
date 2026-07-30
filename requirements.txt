@@ -1,0 +1,19 @@
+# Tested on Python 3.10-3.12.
+#
+# Only scipy is needed to verify the published analysis: analyze.py reads the
+# committed predictions.csv and reproduces every table and chi-square in
+# results.md without an API key or the raw samples.
+#
+#   analyze.py      -> scipy
+#   make_figure.py  -> matplotlib
+#   classify.py     -> anthropic
+#   classify_batch.py -> anthropic
+#   spot_check.py   -> stdlib only (but needs the uncommitted raw samples)
+
+anthropic==0.75.0
+scipy==1.14.1
+matplotlib==3.9.2
+
+# Only needed if you write the loader that recreates reddit_sample.csv and
+# wildchat_sample.csv from Hugging Face (README step 3).
+datasets==3.2.0

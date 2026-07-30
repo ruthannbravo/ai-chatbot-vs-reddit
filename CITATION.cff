@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+title: >-
+  Personal but Not Emotional: What Reddit Advice Posts and ChatGPT First Turns
+  Reveal About How People Address Human and AI Listeners
+message: If you reference this work, please cite it as below.
+type: dataset
+authors:
+  - family-names: Bravo
+    given-names: Ruth-Ann
+abstract: >-
+  An empirical comparison of 1,500 first-turn user messages to a general-purpose
+  AI chatbot (WildChat-1M, 2023-2024) against 1,500 opening posts in four Reddit
+  advice-adjacent subreddits (2009-2013), coded on two independent binary
+  dimensions, Personal and Emotional, by Claude Sonnet 4.6 under a four-rule
+  codebook. Reddit advice posts were 90.8% Personal and 41.3% Emotional; ChatGPT
+  first turns were 0.7% and 0.1%. The dominant Reddit pattern is personal but
+  not emotional, roughly 40% of posts, which a single combined label hides.
+keywords:
+  - self-disclosure
+  - computational social science
+  - content analysis
+  - large language models
+  - WildChat
+  - Reddit
+license: MIT
+date-released: '2026-05-06'

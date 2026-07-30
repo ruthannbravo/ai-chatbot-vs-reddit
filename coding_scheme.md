@@ -24,7 +24,7 @@ Each message gets two independent binary codes.
 
 P and E are **independent**. A message can be any combination: 0/0, 1/0, 0/1, or 1/1.
 
-## The three rules
+## The four rules
 
 ### Rule 1 — Framing over topic
 The *framing* of the message determines P, not the topic alone. A factual or creative-writing question about an intimate topic (drugs, sex, mental health, money) is **P=0** if the author isn't the subject. Only the author's self-involvement makes it personal.
@@ -87,8 +87,11 @@ For each post, in this order:
 - **Polite/casual closings.** "thanks :)", "Yay", "lol" — these are social markers, not emotional disclosure. **E=0**.
 - **Over-counting on Reddit.** Reddit advice posts are almost all P=1, but most are **E=0**. Don't default to E=1 just because it's an advice subreddit.
 
-## Edge cases still open for refinement
+## Judgment calls, as locked
 
-- **Weak affective language** (*"it's frustrating," "I find this confusing"*) — currently E=0 unless the author names their own state. May tighten/loosen after more coding.
-- **Implicit affect via metaphor** (*"invisible to only me," "I'm missing out"*) — currently E=0 under strict Rule 2. Revisit if many posts hinge on this.
+This codebook was **locked on 2026-04-25** and applied unchanged to all 2,997 messages in the full run. The calls below were genuine borderline decisions rather than settled principles; they are recorded so a reader knows exactly where the line was drawn, and so anyone re-running the study can move it deliberately. They are not open questions in this study's results.
+
+- **Weak affective language** (*"it's frustrating," "I find this confusing"*) — locked as **E=0** unless the author names their own state. Loosening this would raise the Reddit Emotional rate.
+- **Implicit affect via metaphor** (*"invisible to only me," "I'm missing out"*) — locked as **E=0** under strict Rule 2. Same direction of sensitivity.
+- **"A significant personal problem"** (clause (b) of the Personal definition) is the least crisp term in the codebook. In practice it was read as: a difficulty the author is currently living with that a reasonable person would treat as consequential. Purely logistical difficulties are excluded by Rule 1b. A future revision should replace this clause with an enumerated list.
 - **Behavioral descriptions implying emotion** — *resolved 2026-04-25:* explicitly E=0 (see "Behavioral / physical descriptions" under failure modes). Trigger: the rd_a20ea blushing-and-memory-blank post, where the LLM coded E=1 on `"can't even remember if I said thanks"` and the human coded E=0 on the strict "named internal state" reading. Codebook now requires named state, not implied behavior.

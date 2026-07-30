@@ -69,7 +69,22 @@ The real 1,500 WildChat run will almost certainly find *some* personal messages 
 - **Only 4 subreddits.** Results may be sensitive to the subreddit choice. LifeProTips vs. the three advice subs shows how much within-Reddit variation exists.
 - **WildChat is a general-purpose chatbot dataset.** Users came to ChatGPT for many reasons; this is not a representative sample of "people seeking emotional support from AI." A chatbot explicitly marketed for companionship (Replika, Character.AI) would likely look very different.
 
-## Next steps
+## Outcome (added 2026-04-25, after the full run)
+
+These next steps were all carried out. Recording the results here, since this
+document is the one the README points readers to for the pilot:
+
+1. **Classifier prompt drafted** from `coding_scheme.md` — it is the system prompt in `classify.py`.
+2. **Validated on these 40 gold labels: 40/40 agreement on both P and E**, against the ≥85% target. Two things qualify that figure. It came *after* Rule 2 was tightened to resolve a disagreement on `rd_a20ea`, one of these same 40 posts (see the `coding_scheme.md` change log), so it is in-sample rather than held-out. And the 20 WildChat rows are all gold-labeled 0/0, most of them unambiguous task text, making the set easier than the score suggests. Reproduce with `python3 classify.py`.
+3. **Full run completed** on 2,997 unique messages; 2,993 usable labels. See `results.md`.
+4. **Spot check done** on 24 rows: 22/24 agreement, producing two manual corrections. The per-row labels were never committed to the repo, so this figure is documented but not independently checkable — see the warning in `results.md` § Spot-check validation.
+5. **Final headline table and chi-square** produced by `analyze.py`; see `results.md`.
+6. **Findings written up** in `research_article.md`. Note that the write-up does not in fact cite Ho et al. (2018) or the infertility-Reddit paper — no literature citations made it into the final article, which is a gap flagged in its caveats.
+
+Pilot estimates held up well: Reddit advice %P moved 93% → 90.8% and WildChat %P
+moved 0% → 0.7% at full N.
+
+## Next steps (as planned at pilot stage, 2026-04-23)
 
 1. **Draft LLM-classifier prompt** from `coding_scheme.md`.
 2. **Validate on these 40 gold labels.** Target: ≥85% agreement on both P and E.
